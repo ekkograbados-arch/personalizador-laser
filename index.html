@@ -1,4 +1,4 @@
-      <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -88,7 +88,7 @@
         let currentTab = 0;
         let canvas = null;
 
-       // ==================== TUS FUENTES ====================
+              // ==================== TUS FUENTES ====================
         const customFonts = [
             { name: "Waltograph", family: "Waltograph", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/fa3023b254c729ef41d870b84bfeab70dc5c5d54/fonts/waltograph42.otf" },
             { name: "Billie James", family: "Billie James", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/BillieJames-Regular.ttf" },
@@ -107,7 +107,7 @@
             { name: "Study Night", family: "Study Night", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Night.otf" },
             { name: "Study Person", family: "Study Person", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Person.otf" }
         ];
-
+          
         const baseUrl = "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/main/templates/";
         function getTemplateUrl(num) {
             return baseUrl + String(num).padStart(3, '0') + ".svg";
@@ -156,11 +156,12 @@
             fabric.Image.fromURL(mockups[product], img => {
                 img.scaleToWidth(550);
                 img.selectable = false;
+                img.crossOrigin = "anonymous";
                 canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-            });
+            }, null, { crossOrigin: 'anonymous' });
         }
 
-        // Funciones de edición (mantenidas)
+        // Subir imagen (local, no tiene problema)
         document.getElementById('imageUpload').addEventListener('change', e => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -229,7 +230,6 @@
             }
         }
 
-        // === DESCARGAS SIMPLIFICADAS ===
         function exportCurrentSide() {
             states[currentTab] = canvas.toJSON();
             const link = document.createElement('a');
@@ -239,30 +239,30 @@
         }
 
         function exportBothSides() {
-            states[currentTab] = canvas.toJSON(); // Guardar lado actual
+            states[currentTab] = canvas.toJSON();
 
-            alert("Descargando Frente y Dorso...\n\nPrimero se descargará el Frente");
+            alert("Iniciando descarga...\n\nPrimero: Frente");
 
-            // Descargar Frente
+            // Frente
             const link1 = document.createElement('a');
             link1.download = 'grabado-frente.png';
             link1.href = canvas.toDataURL({ format: 'png', multiplier: 2 });
             link1.click();
 
-            // Descargar Dorso después de 800ms
+            // Dorso
             setTimeout(() => {
                 if (states[1]) {
                     const tempCanvas = new fabric.Canvas(null, {width: 550, height: 550});
-                    tempCanvas.loadFromJSON(states[1], function() {
+                    tempCanvas.loadFromJSON(states[1], () => {
                         const link2 = document.createElement('a');
                         link2.download = 'grabado-dorso.png';
                         link2.href = tempCanvas.toDataURL({ format: 'png', multiplier: 2 });
                         link2.click();
                     });
                 } else {
-                    alert("El Dorso está vacío. Agrega algo en el Dorso y vuelve a intentar.");
+                    alert("El Dorso está vacío.");
                 }
-            }, 800);
+            }, 1000);
         }
 
         window.onload = () => {
@@ -272,4 +272,4 @@
         };
     </script>
 </body>
-</html>       
+</html> 
