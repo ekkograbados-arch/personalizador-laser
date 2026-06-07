@@ -83,9 +83,8 @@
     </div>
 
     <script>
-        let canvases = { 0: null, 1: null }; // 0=Frente, 1=Dorso
+        let canvases = { 0: null, 1: null };
         let currentTab = 0;
-
         // ==================== TUS FUENTES ====================
         const customFonts = [
             { name: "Arial", family: "Arial" },
@@ -107,6 +106,7 @@
             { name: "Study Night", family: "Study Night", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Night.otf" },
             { name: "Study Person", family: "Study Person", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Person.otf" }
         ];
+
 
         const baseUrl = "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/main/templates/";
         function getTemplateUrl(num) {
@@ -135,23 +135,28 @@
             });
         }
 
-        function initCanvas() {
-            canvases[currentTab] = new fabric.Canvas('canvas', { 
+        function initCanvas(tab) {
+            canvases[tab] = new fabric.Canvas('canvas', { 
                 preserveObjectStacking: true,
                 enableRetinaScaling: true
             });
         }
 
         function switchTab(tab) {
-            if (canvases[currentTab]) canvases[currentTab].dispose();
+            // Guardar canvas actual antes de cambiar
+            if (canvases[currentTab]) {
+                canvases[currentTab].dispose();
+            }
             currentTab = tab;
             document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === tab));
-            
+
             if (!canvases[tab]) {
-                initCanvas();
+                initCanvas(tab);
                 loadMockup();
             } else {
-                document.getElementById('canvas').fabric = canvases[tab];
+                // Recrear el canvas con el estado guardado
+                initCanvas(tab);
+                loadMockup(); // Esto carga solo el fondo, los objetos se mantienen en memoria
             }
         }
 
@@ -240,14 +245,14 @@
         }
 
         function exportBothSides() {
-            // Descargar Frente
+            // Frente
             if (canvases[0]) {
                 const link1 = document.createElement('a');
                 link1.download = 'grabado-frente.png';
                 link1.href = canvases[0].toDataURL({ format: 'png', multiplier: 2 });
                 link1.click();
             }
-            // Descargar Dorso
+            // Dorso
             setTimeout(() => {
                 if (canvases[1]) {
                     const link2 = document.createElement('a');
@@ -255,13 +260,12 @@
                     link2.href = canvases[1].toDataURL({ format: 'png', multiplier: 2 });
                     link2.click();
                 }
-            }, 300);
+            }, 500);
         }
 
-        // Inicializar
         window.onload = () => {
             loadCustomFonts();
-            initCanvas();
+            initCanvas(0);
             loadMockup();
         };
     </script>
