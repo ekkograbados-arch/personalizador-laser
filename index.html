@@ -77,8 +77,7 @@
                 <button onclick="applyGrayscale()">🌫️ Convertir todo a Grises</button>
                 <button onclick="deleteSelected()">🗑️ Borrar Seleccionado</button>
                 <button onclick="clearCurrentSide()">🗑️ Limpiar Este Lado</button>
-                <button onclick="exportCurrentSide()" style="background:#28a745;">📥 Descargar Lado Actual</button>
-                <button onclick="exportBothSides()" style="background:#28a745; font-weight:bold;">📥 Descargar Frente + Dorso</button>
+                <button onclick="exportCurrentSide()" style="background:#28a745; padding:12px;">📥 Descargar Lado Actual (Frente o Dorso)</button>
             </div>
         </div>
     </div>
@@ -87,6 +86,7 @@
         let states = { 0: null, 1: null };
         let currentTab = 0;
         let canvas = null;
+
 
         // ==================== TUS FUENTES ====================
         const customFonts = [
@@ -107,6 +107,7 @@
             { name: "Study Night", family: "Study Night", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Night.otf" },
             { name: "Study Person", family: "Study Person", url: "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/52f9231774d61702e7c82447a21d254229e7b7f3/fonts/Study%20Person.otf" }
         ];
+
 
         const mockups = {
             "medalla-redonda": "https://raw.githubusercontent.com/ekkograbados-arch/personalizador-laser/main/mockups/medalla-redonda.svg",
@@ -141,9 +142,7 @@
             document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === tab));
             createCanvas();
             loadMockup();
-            if (states[tab]) {
-                canvas.loadFromJSON(states[tab], () => canvas.renderAll());
-            }
+            if (states[tab]) canvas.loadFromJSON(states[tab], () => canvas.renderAll());
         }
 
         function loadMockup() {
@@ -155,7 +154,6 @@
             });
         }
 
-        // Subir imagen
         document.getElementById('imageUpload').addEventListener('change', e => {
             const reader = new FileReader();
             reader.onload = ev => {
@@ -202,43 +200,11 @@
             });
         }
 
-        function applyGrayscale() {
-            canvas.getObjects().forEach(obj => {
-                if (obj.type === 'image') {
-                    obj.filters = [new fabric.Image.filters.Grayscale()];
-                    obj.applyFilters();
-                }
-            });
-            canvas.renderAll();
-        }
-
-        function deleteSelected() {
-            const active = canvas.getActiveObject();
-            if (active) canvas.remove(active);
-        }
-
-        function clearCurrentSide() {
-            if (confirm("¿Limpiar este lado?")) {
-                canvas.clear();
-                loadMockup();
-            }
-        }
-
         function exportCurrentSide() {
             const link = document.createElement('a');
             link.download = currentTab === 0 ? 'grabado-frente.png' : 'grabado-dorso.png';
             link.href = canvas.toDataURL({ format: 'png', multiplier: 2 });
             link.click();
-        }
-
-        function exportBothSides() {
-            states[currentTab] = canvas.toJSON();
-            alert("Descargando Frente...");
-            exportCurrentSide();
-
-            setTimeout(() => {
-                alert("Cambia al Dorso, agrega tu diseño y presiona nuevamente 'Descargar Frente + Dorso' para obtener el segundo archivo.");
-            }, 800);
         }
 
         window.onload = () => {
