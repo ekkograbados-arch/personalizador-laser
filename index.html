@@ -157,29 +157,32 @@ function addTemplate(num) {
     const url = getTemplateUrl(num);
     console.log("Intentando cargar plantilla:", num, url);
 
+    let loaded = false;
+
     fabric.loadSVGFromURL(url, function(objects, options) {
         // ÉXITO
+        loaded = true;
         const obj = fabric.util.groupSVGElements(objects, options);
+        
         obj.scaleToWidth(160);
         obj.set({ 
-            left: Math.random() * 200 + 100, 
-            top: Math.random() * 200 + 100 
+            left: 180 + Math.random() * 100, 
+            top: 180 + Math.random() * 100 
         });
+        
         canvas.add(obj);
         canvas.setActiveObject(obj);
         canvas.renderAll();
         console.log("✅ Plantilla", num, "cargada correctamente");
         
     }, function(err) {
-        // ERROR
-        console.error("❌ Error cargando SVG", num, err);
-        // Solo mostramos alerta si realmente falló
-        if (err) {
-            alert("No se pudo cargar la plantilla " + String(num).padStart(3, '0') + "\n\nRevisa la consola (F12) para más detalles.");
+        // Solo mostrar error si realmente falló
+        if (!loaded && err) {
+            console.error("❌ Error real cargando SVG", num, err);
+            // alert("Error al cargar la plantilla " + num);  // Comentado para no molestar
         }
     });
 }
-
         // Resto de funciones (mantener las anteriores)
         document.getElementById('imageUpload').addEventListener('change', e => {
             const reader = new FileReader();
